@@ -7,15 +7,15 @@ import seaborn as sns
 st.title("Covid-19")
 
 # Dados Americana
-cidade = pd.read_csv("https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities-time.csv")
-americana = cidade[cidade["city"].str.startswith('Americana')]
+#cidade = pd.read_csv("https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities-time.csv")
+#americana = cidade[cidade["city"].str.startswith('Americana')]
 
-ameri_res = americana[["date", "city", "totalCases", "deaths", "newDeaths"]]
-ame_total_deaths = ameri_res.iloc[-1].deaths
-ame_total_cases = ameri_res.iloc[-1].totalCases
-ame_date_final = ameri_res.iloc[-1].date
+#ameri_res = americana[["date", "city", "totalCases", "deaths", "newDeaths"]]
+#ame_total_deaths = ameri_res.iloc[-1].deaths
+#ame_total_cases = ameri_res.iloc[-1].totalCases
+#ame_date_final = ameri_res.iloc[-1].date
 
-tabela = pd.DataFrame(np.array([[ame_date_final, ame_total_cases, ame_total_deaths]]),
+#tabela = pd.DataFrame(np.array([[ame_date_final, ame_total_cases, ame_total_deaths]]),
                       columns=["Data", "Total Casos", "Total Mortes"])
 
 # Dados Brasil
@@ -43,5 +43,5 @@ st.pyplot()
 st.subheader('Dados - Brasil')
 st.write(tabela_br)
 
-st.subheader('Dados - Americana')
-st.write(tabela)
+#st.subheader('Dados - Americana')
+#st.write(tabela)
