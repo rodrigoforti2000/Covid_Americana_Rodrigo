@@ -1,1 +1,0 @@
-# Covid_Americana_Rodrigo
