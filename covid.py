@@ -1,47 +1,62 @@
+import streamlit as st
 import pandas as pd
 import numpy as np
-import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-st.title("Covid-19")
+st.title("Covid-19 Web App")
 
-# Dados Americana
-cidade = pd.read_csv("https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities-time.csv")
-americana = cidade[cidade["city"].str.startswith('Americana')]
 
-ameri_res = americana[["date", "city", "totalCases", "deaths", "newDeaths"]]
-ame_total_deaths = ameri_res.iloc[-1].deaths
-ame_total_cases = ameri_res.iloc[-1].totalCases
-ame_date_final = ameri_res.iloc[-1].date
+def removeAfterComma(string):
+    return string.split('/')[0].strip()
 
-tabela = pd.DataFrame(np.array([[ame_date_final, ame_total_cases, ame_total_deaths]]),
-                      columns=["Data", "Total Casos", "Total Mortes"])
+@st.cache
+def load_data():
+    covid = pd.read_csv("https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities-time.csv")
+    covid = covid.loc[:, ["last_info_date", "state", "city", "totalCases", "deaths", "newDeaths", "newCases"]]
+    covid.columns = ["Ult_atualização", "Estado", "Cidade", "Total de Casos", "Mortes", "Novas Mortes", "Novos Casos"]
+    covid = covid[covid.Estado != "TOTAL"]
+    covid["Cidade"] = covid["Cidade"].apply(removeAfterComma)
+    covid["Cidade"] = covid["Cidade"].apply(str.upper)
+    covid["Estado"] = covid["Estado"].apply(str.upper)
+    return covid
 
-# Dados Brasil
-covid = pd.read_csv("https://raw.githubusercontent.com/peixebabel/COVID-19/master/data/casos-br-total.csv")
+covid = load_data()
+    
 
-m_diarias = np.array(covid["Mortes"]) - covid["Mortes"].shift()
-covid["mortes_diarias"] = m_diarias
 
-tabela_br = pd.DataFrame(
-    np.array([[covid.iloc[-1].Data, covid.iloc[-1].Confirmados, int(covid.iloc[-1].Mortes), int(m_diarias.iloc[-1])]]),
-    columns=["Data", "Total Casos", "Total Mortes", "Ult. 24h"])
+#Brasil
+st.header("Dados - Brasil")
 
-seq = range(len(covid))
-sns.relplot(y="mortes_diarias", x=seq, data=covid, kind="line")
-plt.title("Mortes Diárias por Covid-19 no Brasil", loc="left")
-plt.xlabel("Dias")
-plt.ylabel("Mortes Diárias")
-plt.xticks(
-    rotation=90,
-    fontweight='light',
-    horizontalalignment='right'
-)
+
+#Gráfico
+deathstate = covid.groupby("Estado").sum()["Novas Mortes"].reset_index()
+deathstate.columns = ["Estado","Mortes"]
+sns.set(rc={'figure.figsize':(8,5)})
+sns.barplot(x = "Estado",
+            y = "Mortes",
+            data = deathstate,
+            color = "#1F77B4",
+            order = deathstate.sort_values("Mortes",ascending=False).Estado)
+plt.xticks(rotation=90)
+plt.xlabel("Estados")
+plt.ylabel("Mortes")
+plt.title('Mortes por COVID-19\nem cada estado', loc = "left", fontsize = 16)
 st.pyplot()
 
-st.subheader('Dados - Brasil')
-st.write(tabela_br)
+#CIdade
+st.header("Dados - Cidade")
+cidade1 = st.selectbox(options = ["AMERICANA","SANTA BÁRBARA D'OESTE","PIRACICABA"], label = "Selecione a Cidade: ")
+estado1 = st.selectbox(options = ["SP"], label = "Selecione o Estado: ")
 
-st.subheader('Dados - Americana')
-st.write(tabela)
+if cidade1 and estado1:
+    st.table(covid[np.logical_and(covid.Estado == estado1, covid.Cidade == cidade1)].tail(1))
+
+st.text("Caso não tenha o local desejado, escolha digitando abaixo")
+cidade2 = st.text_input('Cidade: ')
+estado2 = st.text_input('Estado: ')
+
+if cidade2 and estado2:
+    cidade = str.upper(cidade2)
+    estado = str.upper(estado2)
+    st.table(covid[np.logical_and(covid.Estado == estado, covid.Cidade == cidade)].tail(1))
