@@ -46,11 +46,12 @@ st.pyplot()
 
 #CIdade
 st.header("Dados - Cidade")
+covid_table = covid.loc[,["Ult_atualização", "Estado", "Cidade", "Total de Casos", "Mortes"]]
 cidade1 = st.selectbox(options = ["AMERICANA","SANTA BÁRBARA D'OESTE","PIRACICABA"], label = "Selecione a Cidade: ")
 estado1 = st.selectbox(options = ["SP"], label = "Selecione o Estado: ")
 
 if cidade1 and estado1:
-    st.table(covid[np.logical_and(covid.Estado == estado1, covid.Cidade == cidade1)].tail(1))
+    st.table(covid_table[np.logical_and(covid.Estado == estado1, covid.Cidade == cidade1)].tail(1))
 
 st.text("Caso não tenha o local desejado, escolha digitando abaixo")
 cidade2 = st.text_input('Cidade: ')
@@ -59,4 +60,4 @@ estado2 = st.text_input('Estado: ')
 if cidade2 and estado2:
     cidade = str.upper(cidade2)
     estado = str.upper(estado2)
-    st.table(covid[np.logical_and(covid.Estado == estado, covid.Cidade == cidade)].tail(1))
+    st.table(covid_table[np.logical_and(covid.Estado == estado, covid.Cidade == cidade)].tail(1))
