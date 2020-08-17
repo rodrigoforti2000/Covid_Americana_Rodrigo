@@ -46,7 +46,7 @@ st.pyplot()
 
 #CIdade
 st.header("Dados - Cidade")
-covid_table = covid.loc[,["Ult_atualização", "Estado", "Cidade", "Total de Casos", "Mortes"]]
+covid_table = covid.loc[:,["Ult_atualização", "Estado", "Cidade", "Total de Casos", "Mortes"]]
 cidade1 = st.selectbox(options = ["AMERICANA","SANTA BÁRBARA D'OESTE","PIRACICABA"], label = "Selecione a Cidade: ")
 estado1 = st.selectbox(options = ["SP"], label = "Selecione o Estado: ")
 
