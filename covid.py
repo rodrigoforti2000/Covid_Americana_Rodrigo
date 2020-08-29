@@ -12,7 +12,7 @@ def removeAfterComma(string):
 
 add_selectbox = st.sidebar.selectbox(
     'Selecione uma opção',
-    ('Brasil', 'Estados', 'Cidades')
+    ('Bem Vindo','Brasil', 'Estados', 'Cidades')
 )
 
 @st.cache
@@ -26,14 +26,22 @@ def load_data():
         covid["Estado"] = covid["Estado"].apply(str.upper)
         return covid
 
+
 covid = load_data()
 
+#--------------------------------------------------------------------------------------
+if add_selectbox == "Descrição":
+     #Brasil
+    st.header("Bem vindo!")
+    st.text("Essa aplicação web foi criada com o objetivo de facilitar a visualizção e a análise dos dados da COVID-19 no Brasil. É possível escolher a área desejada no menu à esquerda.")
+    st.text("Essa aplicação web foi criada por Rodrigo Forti. Os dados usados para a construção das análises são provenientes do Github.")
 
 #--------------------------------------------------------------------------------------
 if add_selectbox == "Brasil":
      #Brasil
     st.header("Dados - Brasil")
     
+    @st.cache
     def load_brasil():
         covid = pd.read_csv("https://raw.githubusercontent.com/peixebabel/COVID-19/master/data/casos-br-total.csv")
         m_diarias = np.array(covid["Mortes"]) - covid["Mortes"].shift()
@@ -46,6 +54,7 @@ if add_selectbox == "Brasil":
         return covid
 
     brasil = load_brasil()
+    
 
     fig, ax = plt.subplots(figsize = (10,5))
     ax.plot(range(len(brasil)), brasil.mortes_diarias, label='Mortes Diárias \nHoje = ' + str(round(brasil.mortes_diarias.values[-1],0)))
