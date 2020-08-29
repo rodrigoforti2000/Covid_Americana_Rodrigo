@@ -33,8 +33,8 @@ covid = load_data()
 if add_selectbox == "Bem Vindo":
      #Brasil
     st.header("Bem vindo!")
-    st.text("Essa aplicação web foi criada com o objetivo de facilitar a visualizção e a análise dos dados da COVID-19 no Brasil. É possível escolher a área desejada no menu à esquerda.")
-    st.text("Essa aplicação web foi criada por Rodrigo Forti. Os dados usados para a construção das análises são provenientes do Github.")
+    st.write("Essa aplicação web foi criada com o objetivo de facilitar a visualizção e a análise dos dados da COVID-19 no Brasil. É possível escolher a área desejada no menu à esquerda.")
+    st.write("Essa aplicação web foi criada por Rodrigo Forti. Os dados usados para a construção das análises são provenientes do Github.")
 
 #--------------------------------------------------------------------------------------
 if add_selectbox == "Brasil":
