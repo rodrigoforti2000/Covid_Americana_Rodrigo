@@ -15,15 +15,47 @@ add_selectbox = st.sidebar.selectbox(
     ('Bem Vindo','Brasil', 'Estados', 'Cidades')
 )
 
+regiao_names = {"SP":"Sudeste",
+                      "RJ":"Sudeste",
+                      "MG":"Sudeste",
+                      "ES":"Sudeste",
+                      "CE":"Nordeste",
+                      "BA":"Nordeste",
+                      "PE":"Nordeste",
+                      "PB":"Nordeste",
+                      "RN":"Nordeste",
+                      "MA":"Nordeste",
+                      "AL":"Nordeste",
+                      "PI":"Nordeste",
+                      "SE":"Nordeste",
+                      "RS":"Sul",
+                      "PR":"Sul",
+                      "SC":"Sul",
+                      "DF":"DF",
+                      "MS":"Centro-Oeste",
+                      "GO":"Centro-Oeste",
+                      "MT":"Centro-Oeste",
+                      "AC":"Norte",
+                      "AM":"Norte",
+                      "PA":"Norte",
+                      "RO":"Norte",
+                      "RR":"Norte",
+                      "TO":"Norte",
+                      "AP":"Norte"}
+
+def get_reg(estado):
+  return regiao_names[estado]
+
 @st.cache
 def load_data():
         covid = pd.read_csv("https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities-time.csv")
-        covid = covid.loc[:, ["last_info_date", "state", "city", "totalCases", "deaths", "newDeaths", "newCases"]]
+        covid = covid.loc[:, ["date", "state", "city", "totalCases", "deaths", "newDeaths", "newCases"]]
         covid.columns = ["Ult_atualização", "Estado", "Cidade", "Total de Casos", "Mortes", "Novas Mortes", "Novos Casos"]
         covid = covid[covid.Estado != "TOTAL"]
         covid["Cidade"] = covid["Cidade"].apply(removeAfterComma)
         covid["Cidade"] = covid["Cidade"].apply(str.upper)
         covid["Estado"] = covid["Estado"].apply(str.upper)
+        covid["Regiao"] = covid.Estado.apply(get_reg)
         return covid
 
 
@@ -33,7 +65,7 @@ covid = load_data()
 if add_selectbox == "Bem Vindo":
      #Brasil
     st.header("Bem vindo!")
-    st.write("Essa aplicação web foi criada com o objetivo de facilitar a visualizção e a análise dos dados da COVID-19 no Brasil. É possível escolher a área desejada no menu à esquerda.")
+    st.write("Essa aplicação web foi criada com o objetivo de facilitar a visualização e a análise dos dados da COVID-19 no Brasil. É possível escolher a área desejada no menu à esquerda.")
     st.write("Essa aplicação web foi criada por Rodrigo Forti. Os dados usados para a construção das análises são provenientes do Github.")
 
 #--------------------------------------------------------------------------------------
@@ -83,6 +115,37 @@ if add_selectbox == "Estados":
     plt.xlabel("Estados")
     plt.ylabel("Mortes")
     plt.title('Mortes por COVID-19\nem cada estado', loc = "left", fontsize = 16)
+    st.pyplot()
+
+    #Grafico2
+    regiao_box = st.selectbox(
+    'Selecione uma região', np.unique(covid.Regiao))
+
+    regiao = covid[covid.Regiao == regiao_box]
+    regiao_mortes = regiao.groupby(["Ult_atualização","Estado"]).sum()["Novas Mortes"]
+    regiao_mortes = regiao_mortes.reset_index()
+
+    regiao_semanal = []
+    est = []
+    count_sem = []
+    for i in np.unique(regiao_mortes.Estado):
+      k = 1
+      for j in range(1,len(regiao_mortes[regiao_mortes.Estado == i]),7):
+        x = regiao_mortes[regiao_mortes.Estado == i][j:j+7].sum()["Novas Mortes"]
+        regiao_semanal.append(x)
+        est.append(i)
+        count_sem.append(k)
+        k += 1
+        
+    mse = pd.DataFrame({"Estado":est,"Mortes":regiao_semanal, "Semana":count_sem})
+
+    st.write("Mortes por Semana em cada Estado")
+    g = sns.FacetGrid(mse, col = "Estado", col_wrap= 3)
+    g = g.map_dataframe(sns.lineplot,
+                 x = "Semana",
+                 y = "Mortes")
+    plt.xlabel("Semana")
+    plt.ylabel("Mortes")
     st.pyplot()
 
 
