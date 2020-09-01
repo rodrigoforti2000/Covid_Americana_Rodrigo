@@ -67,6 +67,8 @@ if add_selectbox == "Bem Vindo":
     st.header("Bem vindo!")
     st.write("Essa aplicação web foi criada com o objetivo de facilitar a visualização e a análise dos dados da COVID-19 no Brasil. É possível escolher a área desejada no menu à esquerda.")
     st.write("Essa aplicação web foi criada por Rodrigo Forti. Os dados usados para a construção das análises são provenientes do Github.")
+    st.write("Dados Brasil: https://raw.githubusercontent.com/peixebabel/COVID-19/master/data/casos-br-total.csv")
+    st.write("Dados Estados e Cidades: https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities-time.csv")
 
 #--------------------------------------------------------------------------------------
 if add_selectbox == "Brasil":
@@ -86,12 +88,15 @@ if add_selectbox == "Brasil":
         return covid
 
     brasil = load_brasil()
+
+    st.write("Última atualização em: ")
+    st.write(brasil.Data.tail(1))
     
 
     fig, ax = plt.subplots(figsize = (10,5))
     ax.plot(range(len(brasil)), brasil.mortes_diarias, label='Mortes Diárias \nHoje = ' + str(round(brasil.mortes_diarias.values[-1],0)))
     ax.plot(range(len(brasil)), brasil.media_movel, label= 'Média Móvel de Mortes Diárias \nHoje = ' + str(round(brasil.media_movel.values[-1],0)))
-    plt.title("Dados de Mortes Brasil", loc = "left")
+    plt.title("Mortes por COVID-19 no Brasil", loc = "left")
     plt.xlabel("Dias")
     plt.ylabel("Mortes")
     ax.legend(loc='upper left', shadow=True)
@@ -100,7 +105,10 @@ if add_selectbox == "Brasil":
 #---------------------------------------------------------------------------------------
 if add_selectbox == "Estados":
     #Estados
-    st.header("Dados - Estados")  
+    st.header("Dados - Estados")
+
+    st.write("Última atualização em:")
+    st.write(covid["Ult_atualização"].tail(1))
     
     #Gráfico
     deathstate = covid.groupby("Estado").sum()["Novas Mortes"].reset_index()
@@ -130,7 +138,7 @@ if add_selectbox == "Estados":
     count_sem = []
     for i in np.unique(regiao_mortes.Estado):
       k = 1
-      for j in range(1,len(regiao_mortes[regiao_mortes.Estado == i]),7):
+      for j in range(1, (len(regiao_mortes[regiao_mortes.Estado == i]) - 7), 7):
         x = regiao_mortes[regiao_mortes.Estado == i][j:j+7].sum()["Novas Mortes"]
         regiao_semanal.append(x)
         est.append(i)
@@ -154,7 +162,7 @@ if add_selectbox == "Cidades":
     #CIdade
     st.header("Dados - Cidade")
     covid_table = covid.loc[:,["Ult_atualização", "Estado", "Cidade", "Total de Casos", "Mortes"]]
-    cidade1 = st.selectbox(options = ["AMERICANA","SANTA BÁRBARA D'OESTE","PIRACICABA"], label = "Selecione a Cidade: ")
+    cidade1 = st.selectbox(options = ["AMERICANA","SANTA BÁRBARA D'OESTE"], label = "Selecione a Cidade: ")
     estado1 = st.selectbox(options = ["SP"], label = "Selecione o Estado: ")
 
     if cidade1 and estado1:
