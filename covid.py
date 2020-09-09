@@ -115,15 +115,16 @@ if add_selectbox == "Estados":
     #Gráfico
     deathstate = covid.groupby("Estado").sum()["Novas Mortes"].reset_index()
     deathstate.columns = ["Estado","Mortes"]
-    sns.set(rc={'figure.figsize':(8,5)})
-    sns.barplot(x = "Estado",
-                y = "Mortes",
+    
+    sns.set(rc={'figure.figsize':(9,6)})
+    sns.barplot(x = "Mortes",
+                y = "Estado",
                 data = deathstate,
                 color = "#1F77B4",
                 order = deathstate.sort_values("Mortes",ascending=False).Estado)
     plt.xticks(rotation=90)
-    plt.xlabel("Estados")
-    plt.ylabel("Mortes")
+    plt.xlabel("Mortes")
+    plt.ylabel("Estados")
     plt.title('Mortes por COVID-19\nem cada estado', loc = "left", fontsize = 16)
     st.pyplot()
 
@@ -149,7 +150,7 @@ if add_selectbox == "Estados":
         
     mse = pd.DataFrame({"Estado":est,"Mortes":regiao_semanal, "Semana":count_sem})
 
-    st.write("Mortes por Semana em cada Estado")
+    st.write("Mortes por Semana em cada Estado por COVID-19")
     g = sns.FacetGrid(mse, col = "Estado", col_wrap= 3)
     g = g.map_dataframe(sns.lineplot,
                  x = "Semana",
