@@ -76,13 +76,15 @@ if add_selectbox == "Brasil":
     st.header("Dados - Brasil")
     
     @st.cache
-    def load_brasil():
+    def load_brasil(): 
         covid = pd.read_csv("https://raw.githubusercontent.com/peixebabel/COVID-19/master/data/casos-br-total.csv")
-        m_diarias = np.array(covid["Mortes"]) - covid["Mortes"].shift()
+        covid.Mortes[covid.Mortes == "#REF!"] = ['64330.5','64330.5']
+        covid.Mortes = covid["Mortes"].astype(float)
+        m_diarias = np.array(covid["Mortes"]) - np.array(covid["Mortes"].shift())
         covid["mortes_diarias"] = m_diarias
         mm = []
         for i in range(7,len(covid)):
-           mm.append(covid.loc[range(i-7,i), "mortes_diarias"].mean())
+           mm.append(covid.mortes_diarias.iloc[range(i-7, i)].mean())
         covid["media_movel"] = [np.nan for __ in range(7)] + mm
         covid["media_movel"] = covid.media_movel.round()
         return covid
