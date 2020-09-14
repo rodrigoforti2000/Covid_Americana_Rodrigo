@@ -82,17 +82,29 @@ if add_selectbox == "Brasil":
         covid.Mortes = covid["Mortes"].astype(float)
         m_diarias = np.array(covid["Mortes"]) - np.array(covid["Mortes"].shift())
         covid["mortes_diarias"] = m_diarias
+        casos_diarios = np.array(covid["Confirmados"]) - np.array(covid["Confirmados"].shift())
+        covid["casos_diarios"] = casos_diarios
         mm = []
+        cm = []
         for i in range(7,len(covid)):
            mm.append(covid.mortes_diarias.iloc[range(i-7, i)].mean())
+           cm.append(covid.casos_diarios.iloc[range(i-7, i)].mean())
         covid["media_movel"] = [np.nan for __ in range(7)] + mm
         covid["media_movel"] = covid.media_movel.round()
+        covid["casos_media_movel"] = [np.nan for __ in range(7)] + cm
+        covid["casos_media_movel"] = covid.casos_media_movel.round()
         return covid
 
     brasil = load_brasil()
 
     st.write("Última atualização em: ")
     st.write(brasil.Data.tail(1))
+
+    st.write("Total de Mortes: ")
+    st.write(brasil.Mortes.tail(1))
+
+    st.write("Total de Casos Confirmados: ")
+    st.write(brasil.Confirmados.tail(1))
     
 
     fig, ax = plt.subplots(figsize = (10,5))
@@ -101,6 +113,15 @@ if add_selectbox == "Brasil":
     plt.title("Mortes por COVID-19 no Brasil", loc = "left")
     plt.xlabel("Dias")
     plt.ylabel("Mortes")
+    ax.legend(loc='upper left', shadow=True)
+    st.pyplot()
+
+    fig, ax = plt.subplots(figsize = (10,5))
+    ax.plot(range(len(brasil)), brasil.casos_diarios, label='Casos Diários \nHoje = ' + str(round(brasil.casos_diarios.values[-1],0)))
+    ax.plot(range(len(brasil)), brasil.casos_media_movel, label= 'Média Móvel de Casos Diários \nHoje = ' + str(round(brasil.casos_media_movel.values[-1],0)))
+    plt.title("Casos por COVID-19 no Brasil", loc = "left")
+    plt.xlabel("Dias")
+    plt.ylabel("Casos Confirmados")
     ax.legend(loc='upper left', shadow=True)
     st.pyplot()
 
