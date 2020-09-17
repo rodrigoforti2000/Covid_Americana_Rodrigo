@@ -89,7 +89,7 @@ if add_selectbox == "Brasil":
         for i in range(7,len(covid)):
            mm.append(covid.mortes_diarias.iloc[range(i-7, i)].mean())
            cm.append(covid.casos_diarios.iloc[range(i-7, i)].mean())
-        covid["media_movel"] = [np.nan for __ in range(7)] + mm
+        covid["media_movel"] = [0 for __ in range(7)] + mm
         covid["media_movel"] = covid.media_movel.round()
         covid["casos_media_movel"] = [np.nan for __ in range(7)] + cm
         covid["casos_media_movel"] = covid.casos_media_movel.round()
@@ -119,7 +119,7 @@ if add_selectbox == "Brasil":
     fig, ax = plt.subplots(figsize = (10,5))
     ax.plot(range(len(brasil)), brasil.casos_diarios, label='Casos Diários \nHoje = ' + str(round(brasil.casos_diarios.values[-1],0)))
     ax.plot(range(len(brasil)), brasil.casos_media_movel, label= 'Média Móvel de Casos Diários \nHoje = ' + str(round(brasil.casos_media_movel.values[-1],0)))
-    plt.title("Casos por COVID-19 no Brasil", loc = "left")
+    plt.title("Casos de COVID-19 no Brasil", loc = "left")
     plt.xlabel("Dias")
     plt.ylabel("Casos Confirmados")
     ax.legend(loc='upper left', shadow=True)
